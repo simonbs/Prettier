@@ -68,7 +68,7 @@ case .failure(let error):
 
 It's possible to format only a specific range in the input string by calling `-format(:limitedTo:)`.
 
-```
+```swift
 let result = prettier.format(script, limitedTo: 20 ... 39)
 switch result {
 case .success(let formattedCode):
@@ -82,7 +82,7 @@ case .failure(let error):
 You can also specify a location to be translated from the unformatted code to the formatted code.
 This is useful for moving the cursor when developing a text editor.
 
-```
+```swift
 let result = prettier.format(script, withCursorAtLocation: 38)
 switch result {
 case .success(let formatResult):
