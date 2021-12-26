@@ -4,7 +4,7 @@ A wrapper for the [Prettier](https://prettier.io) code formatter written in Swif
 The package runs the code formatter in Apple's [JavaScriptCore](https://developer.apple.com/documentation/javascriptcore).
 All the necessary JavaScript files are bundled with this package.
 
-## Can this package be used in production?
+### Can this package be used in production?
 
 Probably. The package uses stable versions of all dependencies and I intend to use it in one of my upcoming projects. Use it at your own risk though.
 
