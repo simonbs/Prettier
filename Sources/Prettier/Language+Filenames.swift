@@ -69,32 +69,6 @@ extension Language {
                 ".php_cs.dist",
                 "Phakefile"
             ]
-
-        case .ruby:
-            return [
-                ".irbrc",
-                ".pryrc",
-                ".simplecov",
-                "Appraisals",
-                "Berksfile",
-                "Brewfile",
-                "Buildfile",
-                "Capfile",
-                "Dangerfile",
-                "Deliverfile",
-                "Fastfile",
-                "Gemfile",
-                "Guardfile",
-                "Jarfile",
-                "Mavenfile",
-                "Podfile",
-                "Puppetfile",
-                "Rakefile",
-                "Snapfile",
-                "Thorfile",
-                "Vagrantfile",
-                "buildfile"
-            ]
         }
     }
 }

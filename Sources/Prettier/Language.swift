@@ -33,8 +33,6 @@ public enum Language: CaseIterable {
 
     case php
 
-    case ruby
-
     var parserName: String {
         return parsers[0].rawValue
     }
@@ -92,9 +90,6 @@ public enum Language: CaseIterable {
 
         case .php:
             return [.php]
-
-        case .ruby:
-            return [.ruby]
         }
     }
 }

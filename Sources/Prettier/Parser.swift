@@ -20,7 +20,6 @@ public enum Parser: String {
     case mdx
     case meriyah
     case php
-    case ruby
     case scss
     case typeScript
     case vue
@@ -70,8 +69,6 @@ public enum Parser: String {
             return "parser-meriyah"
         case .php:
             return "parser-php"
-        case .ruby:
-            return "parser-ruby"
         case .scss:
             return "parser-postcss"
         case .typeScript:

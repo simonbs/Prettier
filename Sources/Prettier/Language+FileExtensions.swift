@@ -151,32 +151,6 @@ extension Language {
                 ".phps",
                 ".phpt"
             ]
-
-        case .ruby:
-            return [
-                ".rb",
-                ".builder",
-                ".eye",
-                ".fcgi",
-                ".gemspec",
-                ".god",
-                ".jbuilder",
-                ".mspec",
-                ".pluginspec",
-                ".podspec",
-                ".prawn",
-                ".rabl",
-                ".rake",
-                ".rbi",
-                ".rbuild",
-                ".rbw",
-                ".rbx",
-                ".ru",
-                ".ruby",
-                ".spec",
-                ".thor",
-                ".watchr"
-            ]
         }
     }
 }
