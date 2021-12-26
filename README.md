@@ -52,15 +52,18 @@ It is recommended to do this as early as possible so you're ready to format the 
 With the `Prettier` instance prepared you can start formatting code.
 
 ```swift
+// 💩 This is some poorly formatted JavaScript that we'll format.
 let script = """
 if(hello=="world"){
 return"Hello world"
 }
 """
+// Earlier we have created and prepared our instance of Prettier. We're ready to format the JavaScript code.
 let result = prettier.format(script)
 switch result {
 case .success(let formattedCode):
   print(formattedCode)
+  // ✨ Here's our formatted code. Looks great!
   // if (hello == "world") {
   //   return "Hello world";
   // }
