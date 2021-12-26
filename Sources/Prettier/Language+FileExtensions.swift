@@ -30,7 +30,7 @@ extension Language {
                 ".xhtml",
                 ".mjml"
             ]
-        case .lightingWebComponents:
+        case .lightningWebComponents:
             return []
         case .vue:
             return [".vue"]

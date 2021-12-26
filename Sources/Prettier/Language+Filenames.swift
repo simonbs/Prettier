@@ -10,7 +10,7 @@ extension Language {
         case .handlebars:
             return []
 
-        case .angular, .html, .lightingWebComponents, .vue:
+        case .angular, .html, .lightningWebComponents, .vue:
             return []
 
         case .javaScript:

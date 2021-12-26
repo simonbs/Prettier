@@ -13,7 +13,7 @@ public enum Language: CaseIterable {
 
     case angular
     case html
-    case lightingWebComponents
+    case lightningWebComponents
     case vue
 
     case javaScript
@@ -58,7 +58,7 @@ public enum Language: CaseIterable {
             return [.angular]
         case .html:
             return [.html]
-        case .lightingWebComponents:
+        case .lightningWebComponents:
             return [.lwc]
         case .vue:
             return [.vue]
