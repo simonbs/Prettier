@@ -1,6 +1,6 @@
 import Foundation
 
-public enum Parser: String {
+enum Parser: String, CaseIterable {
     case angular
     case babel
     case babelFlow = "babel-flow"

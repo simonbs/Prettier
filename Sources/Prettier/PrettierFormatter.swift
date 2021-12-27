@@ -157,7 +157,7 @@ private extension PrettierFormatter {
     }
 
     private func loadScriptsIntoContext() {
-        let filenames = ["standalone"] + language.parsers.map(\.filename)
+        let filenames = ["standalone"] + Parser.allCases.map(\.filename)
         let fileURLs = filenames.compactMap { Bundle.module.url(forResource: $0, withExtension: "js", subdirectory: "js") }
         let script = fileURLs.compactMap { try? String(contentsOf: $0) }.joined(separator: "\n")
         context.evaluateScript(script)

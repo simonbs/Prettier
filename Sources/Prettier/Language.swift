@@ -34,62 +34,62 @@ public enum Language: CaseIterable {
     case php
 
     var parserName: String {
-        return parsers[0].rawValue
+        return parser.rawValue
     }
 
-    var parsers: [Parser] {
+    var parser: Parser {
         switch self {
         case .css, .postCSS:
-            return [.css]
+            return .css
         case .less:
-            return [.less]
+            return .less
         case .scss:
-            return [.scss]
+            return .scss
 
         case .graphQL:
-            return [.graphQL]
+            return .graphQL
 
         case .handlebars:
-            return [.glimmer]
+            return .glimmer
 
         case .angular:
-            return [.angular]
+            return .angular
         case .html:
-            return [.html]
+            return .html
         case .lightningWebComponents:
-            return [.lwc]
+            return .lwc
         case .vue:
-            return [.vue]
+            return .vue
 
         case .javaScript:
-            return [.babel, .espree, .meriyah, .babelFlow, .babelTS, .flow, .typeScript]
+            return .babel
         case .flow:
-            return [.flow, .babelFlow]
+            return .flow
         case .jsx:
-            return [.babel, .babelFlow, .babelTS, .flow, .typeScript, .espree, .meriyah]
+            return .babel
         case .typeScript:
-            return [.typeScript, .babelTS]
+            return .typeScript
         case .tsx:
-            return [.typeScript, .babelTS]
+            return .typeScript
         case .jsonStringify:
-            return [.jsonStringify]
+            return .jsonStringify
         case .json:
-            return [.json]
+            return .json
         case .jsonWithComments:
-            return [.json]
+            return .json
         case .json5:
-            return [.json5]
+            return .json5
 
         case .markdown:
-            return [.markdown]
+            return .markdown
         case .mdx:
-            return [.mdx]
+            return .mdx
 
         case .yaml:
-            return [.yaml]
+            return .yaml
 
         case .php:
-            return [.php]
+            return .php
         }
     }
 }
