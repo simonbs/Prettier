@@ -103,7 +103,7 @@ Note that the result returned by `-format(:withCursorAtLocation:)` is different 
 from both `-format()` and `-format(:limitedTo:)` because this one contains the location in the formatted string.
 
 There are several properties that can be used to tweak the formatted code. These options map 1:1 to options in the JavaScript implementation of Prettier.
-For more information on the options, please have a look at [Prettier.swift](https://github.com/simonbs/Prettier/blob/main/Sources/Prettier/Prettier.swift) as well as [the documentation for the JavaScript implementation of Prettier](https://prettier.io/docs/en/options.html).
+For more information on the options, please have a look at [PrettierFormatter.swift](https://github.com/simonbs/Prettier/blob/main/Sources/Prettier/PrettierFormatter.swift) as well as [the documentation for the JavaScript implementation of Prettier](https://prettier.io/docs/en/options.html).
 
 ### Language Detection
 
