@@ -14,11 +14,9 @@ Prettier is distributed using the [Swift Package Manager](https://www.swift.org/
 
 ```swift
 let package = Package(
-...
-dependencies: [
-    .package(url: "git@github.com:simonbs/Prettier.git", from: "0.1.0")
-]
-...
+  dependencies: [
+      .package(url: "git@github.com:simonbs/Prettier.git", from: "0.1.0")
+  ]
 )
 ```
 
@@ -33,7 +31,7 @@ import Prettier
 Now you can create an instance of Prettier.
 
 ```swift
-let prettier = Prettier(language: .javaScript)
+let formatter = PrettierFormatter(language: .javaScript)
 ```
 
 Note that we're passing a language when creating an instance of `Prettier`. This is the programming language of the code to format.
@@ -43,7 +41,7 @@ See the list of supported languages below.
 After creating an instance of `Prettier`, you must prepare it to format code.
 
 ```swift
-prettier.prepare()
+formatter.prepare()
 ```
 
 This prepares the instance by loading the bundled JavaScript files from disk and evaluating them in JavaScriptCore.
@@ -59,7 +57,7 @@ return"Hello world"
 }
 """
 // Earlier we have created and prepared our instance of Prettier. We're ready to format the JavaScript code.
-let result = prettier.format(script)
+let result = formatter.format(script)
 switch result {
 case .success(let formattedCode):
   print(formattedCode)
@@ -76,7 +74,7 @@ case .failure(let error):
 It's possible to format only a specific range in the input string by calling `-format(:limitedTo:)`.
 
 ```swift
-let result = prettier.format(script, limitedTo: 20 ... 39)
+let result = formatter.format(script, limitedTo: 20 ... 39)
 switch result {
 case .success(let formattedCode):
   break
@@ -90,7 +88,7 @@ You can also specify a location to be translated from the unformatted code to th
 This is useful for moving the cursor when developing a text editor.
 
 ```swift
-let result = prettier.format(script, withCursorAtLocation: 38)
+let result = formatter.format(script, withCursorAtLocation: 38)
 switch result {
 case .success(let formatResult):
   print(formatResult.formattedString)
