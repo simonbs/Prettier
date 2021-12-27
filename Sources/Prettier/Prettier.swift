@@ -1,7 +1,7 @@
 import JavaScriptCore
 
 /// Error that can be returned by Prettier.
-public enum PrettierError: LocalizedError {
+public enum PrettierFormatterError: LocalizedError {
     case unprepared
     case failedCreatingConfiguration
     case failedCallingFormatFunction
@@ -28,7 +28,7 @@ public enum PrettierError: LocalizedError {
 }
 
 /// Takes unformatted code as input and outputs formatted code.
-public final class Prettier {
+public final class PrettierFormatter {
     /// The length that the printer will wrap on. Specify a value of zero to disable wrapping.
     public var printWidth = 80
     /// The number of spaces per indentation-level.
@@ -82,7 +82,7 @@ public final class Prettier {
     /// Formats the inputted code.
     /// - Parameter code: Code to format.
     /// - Returns: Result carriying the formatted code.
-    public func format(_ code: String) -> Result<String, PrettierError> {
+    public func format(_ code: String) -> Result<String, PrettierFormatterError> {
         return makeConfiguration().flatMap { configuration in
             return format(code, withConfiguration: configuration)
         }.flatMap { value in
@@ -95,7 +95,7 @@ public final class Prettier {
     ///   - code: String containing the code to be formatted.
     ///   - range: Range in the string where the code to be formatted resides.
     /// - Returns: Result carrying the formatted code.
-    public func format(_ code: String, limitedTo range: ClosedRange<Int>) -> Result<String, PrettierError> {
+    public func format(_ code: String, limitedTo range: ClosedRange<Int>) -> Result<String, PrettierFormatterError> {
         return makeConfiguration().flatMap { configuration in
             configuration.setObject(range.lowerBound, forKeyedSubscript: .rangeStart)
             configuration.setObject(range.upperBound, forKeyedSubscript: .rangeEnd)
@@ -108,7 +108,7 @@ public final class Prettier {
     ///   - code: Code to format.
     ///   - cursorOffset: The cursor's current location in the code.
     /// - Returns: Result carrying the formatted code.
-    public func format(_ code: String, withCursorAtLocation cursorOffset: Int) -> Result<FormatWithCursorResult, PrettierError> {
+    public func format(_ code: String, withCursorAtLocation cursorOffset: Int) -> Result<FormatWithCursorResult, PrettierFormatterError> {
         return makeConfiguration().flatMap { configuration in
             configuration.setObject(cursorOffset, forKeyedSubscript: .cursorOffset)
             return format(code, withConfiguration: configuration, prettierFunctionName: "formatWithCursor")
@@ -116,10 +116,10 @@ public final class Prettier {
     }
 }
 
-private extension Prettier {
+private extension PrettierFormatter {
     private func format(_ code: String,
                         withConfiguration configuration: JSValue,
-                        prettierFunctionName: String = "format") -> Result<JSValue, PrettierError> {
+                        prettierFunctionName: String = "format") -> Result<JSValue, PrettierFormatterError> {
         context.exception = nil
         guard let prettier = context.objectForKeyedSubscript("prettier") else {
             return .failure(.unprepared)
@@ -140,7 +140,7 @@ private extension Prettier {
         }
     }
 
-    private func mapString(from value: JSValue) -> Result<String, PrettierError> {
+    private func mapString(from value: JSValue) -> Result<String, PrettierFormatterError> {
         if value.isString, let string = value.toString() {
             return .success(string)
         } else {
@@ -148,7 +148,7 @@ private extension Prettier {
         }
     }
 
-    private func mapFormatWithCursoResult(from value: JSValue) -> Result<FormatWithCursorResult, PrettierError> {
+    private func mapFormatWithCursoResult(from value: JSValue) -> Result<FormatWithCursorResult, PrettierFormatterError> {
         if value.isObject, let object = value.toObject() as? [String: Any], let result = FormatWithCursorResult(object: object) {
             return .success(result)
         } else {
@@ -163,7 +163,7 @@ private extension Prettier {
         context.evaluateScript(script)
     }
 
-    private func makeConfiguration() -> Result<JSValue, PrettierError> {
+    private func makeConfiguration() -> Result<JSValue, PrettierFormatterError> {
         guard let value = JSValue(newObjectIn: context) else {
             return .failure(.failedCreatingConfiguration)
         }

@@ -15,9 +15,9 @@ foo(
 );
 
 """
-        let prettier = Prettier(language: .javaScript)
-        prettier.prepare()
-        let result = prettier.format(input)
+        let formatter = PrettierFormatter(language: .javaScript)
+        formatter.prepare()
+        let result = formatter.format(input)
         switch result {
         case .success(let result):
             XCTAssertEqual(result, output)
@@ -29,9 +29,9 @@ foo(
     func testUntouched() {
         let input = "foo(arg1, arg2, arg3, arg4);"
         let output = "foo(arg1, arg2, arg3, arg4);\n"
-        let prettier = Prettier(language: .javaScript)
-        prettier.prepare()
-        let result = prettier.format(input)
+        let formatter = PrettierFormatter(language: .javaScript)
+        formatter.prepare()
+        let result = formatter.format(input)
         switch result {
         case .success(let result):
             XCTAssertEqual(result, output)
@@ -67,9 +67,9 @@ array_map(
 );
 
 """
-        let prettier = Prettier(language: .php)
-        prettier.prepare()
-        let result = prettier.format(input)
+        let formatter = PrettierFormatter(language: .php)
+        formatter.prepare()
+        let result = formatter.format(input)
         switch result {
         case .success(let result):
             XCTAssertEqual(result, output)
@@ -92,9 +92,9 @@ const foo = 'bar'
 console .log( 213 )
 
 """
-        let prettier = Prettier(language: .markdown)
-        prettier.prepare()
-        let result = prettier.format(input)
+        let formatter = PrettierFormatter(language: .markdown)
+        formatter.prepare()
+        let result = formatter.format(input)
         switch result {
         case .success(let result):
             XCTAssertEqual(result, output)
@@ -106,10 +106,10 @@ console .log( 213 )
     func testTabWidth() {
         let input = "if (hello == \"world\") { return \"Hello world\" }"
         let output = "if (hello == \"world\") {\n        return \"Hello world\";\n}\n"
-        let prettier = Prettier(language: .javaScript)
-        prettier.tabWidth = 8
-        prettier.prepare()
-        let result = prettier.format(input)
+        let formatter = PrettierFormatter(language: .javaScript)
+        formatter.tabWidth = 8
+        formatter.prepare()
+        let result = formatter.format(input)
         switch result {
         case .success(let result):
             XCTAssertEqual(result, output)
@@ -121,10 +121,10 @@ console .log( 213 )
     func testTabsInsteadOfSpaces() {
         let input = "if (hello == \"world\") { return \"Hello world\" }"
         let output = "if (hello == \"world\") {\n\treturn \"Hello world\";\n}\n"
-        let prettier = Prettier(language: .javaScript)
-        prettier.useTabs = true
-        prettier.prepare()
-        let result = prettier.format(input)
+        let formatter = PrettierFormatter(language: .javaScript)
+        formatter.useTabs = true
+        formatter.prepare()
+        let result = formatter.format(input)
         switch result {
         case .success(let result):
             XCTAssertEqual(result, output)
@@ -136,10 +136,10 @@ console .log( 213 )
     func testSemicolonsDisables() {
         let input = "if (hello == \"world\") { return \"Hello world\" }"
         let output = "if (hello == \"world\") {\n  return \"Hello world\"\n}\n"
-        let prettier = Prettier(language: .javaScript)
-        prettier.semicolons = false
-        prettier.prepare()
-        let result = prettier.format(input)
+        let formatter = PrettierFormatter(language: .javaScript)
+        formatter.semicolons = false
+        formatter.prepare()
+        let result = formatter.format(input)
         switch result {
         case .success(let result):
             XCTAssertEqual(result, output)
@@ -151,9 +151,9 @@ console .log( 213 )
     func testFormattingRangeOfCode() {
         let input = "if(hello==\"world\"){\nreturn\"Hello world\"\n}"
         let output = "if(hello==\"world\"){\nreturn \"Hello world\";\n}"
-        let prettier = Prettier(language: .javaScript)
-        prettier.prepare()
-        let result = prettier.format(input, limitedTo: 20 ... 39)
+        let formatter = PrettierFormatter(language: .javaScript)
+        formatter.prepare()
+        let result = formatter.format(input, limitedTo: 20 ... 39)
         switch result {
         case .success(let result):
             XCTAssertEqual(result, output)
@@ -165,9 +165,9 @@ console .log( 213 )
     func testFormattingWithCursorLocation() {
         let input = "if(hello==\"world\"){\nreturn\"Hello world\"\n}"
         let output = "if (hello == \"world\") {\n  return \"Hello world\";\n}\n"
-        let prettier = Prettier(language: .javaScript)
-        prettier.prepare()
-        let result = prettier.format(input, withCursorAtLocation: 38)
+        let formatter = PrettierFormatter(language: .javaScript)
+        formatter.prepare()
+        let result = formatter.format(input, withCursorAtLocation: 38)
         switch result {
         case .success(let formatResult):
             XCTAssertEqual(formatResult.formattedString, output)
