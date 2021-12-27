@@ -22,23 +22,23 @@ let package = Package(
 
 ## Usage
 
-To get started using Prettier you must first import the module.
+To get started with Prettier you must first import the module.
 
 ```swift
 import Prettier
 ```
 
-Now you can create an instance of Prettier.
+Now you can create an instance of PrettierFormatter.
 
 ```swift
 let formatter = PrettierFormatter(language: .javaScript)
 ```
 
-Note that we're passing a language when creating an instance of `Prettier`. This is the programming language of the code to format.
+We're passing a language when creating an instance of PrettierFormatter. This is the programming language of the code to format.
 The package contains all the languages officially supported by the Prettier code formatter which can be built to run in JavaScriptCore.
 See the list of supported languages below.
 
-After creating an instance of `Prettier`, you must prepare it to format code.
+After creating an instance of PrettierFormatter, you must prepare the formatter before formatting code.
 
 ```swift
 formatter.prepare()
@@ -47,7 +47,7 @@ formatter.prepare()
 This prepares the instance by loading the bundled JavaScript files from disk and evaluating them in JavaScriptCore.
 It is recommended to do this as early as possible so you're ready to format the code later.
 
-With the `Prettier` instance prepared you can start formatting code.
+With the PrettierFormatter instance prepared you can start formatting code.
 
 ```swift
 // 💩 This is some poorly formatted JavaScript that we'll format.
@@ -107,10 +107,10 @@ For more information on the options, please have a look at [Prettier.swift](http
 
 ### Language Detection
 
-When creating an instance of `Prettier` you must specify the language of the code to format.
-The `Language` has initializers to help determine the language of a file given it's filename, file extension or both.
+When creating an instance of PrettierFormatter you must specify the language of the code to format.
+The Language type has initializers to help determine the language of a file given it's filename, file extension or both.
 
-The language can be detected by specifying the file extension.
+Languages can be detected from the file extension.
 
 ```swift
 let language = Language(fileExtension: "js") // Detected: JavaScript
