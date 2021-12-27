@@ -29,7 +29,7 @@ public enum PrettierFormatterError: LocalizedError {
 
 /// Takes unformatted code as input and outputs formatted code.
 public final class PrettierFormatter {
-    /// The length that the printer will wrap on. Specify a value of zero to disable wrapping.
+    /// The length that the printer will wrap on.
     public var printWidth = 80
     /// The number of spaces per indentation-level.
     public var tabWidth = 2
