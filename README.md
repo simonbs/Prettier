@@ -14,9 +14,9 @@ Prettier is distributed using the [Swift Package Manager](https://www.swift.org/
 
 ```swift
 let package = Package(
-  dependencies: [
-      .package(url: "git@github.com:simonbs/Prettier.git", from: "0.1.0")
-  ]
+    dependencies: [
+        .package(url: "git@github.com:simonbs/Prettier.git", from: "0.1.0")
+    ]
 )
 ```
 
@@ -60,14 +60,14 @@ return"Hello world"
 let result = formatter.format(script)
 switch result {
 case .success(let formattedCode):
-  print(formattedCode)
-  // ✨ Here's our formatted code. Looks great!
-  // if (hello == "world") {
-  //   return "Hello world";
-  // }
+    print(formattedCode)
+    // ✨ Here's our formatted code. Looks great!
+    // if (hello == "world") {
+    //   return "Hello world";
+    // }
 case .failure(let error):
-  // Perform proper error handling.
-  print(error)
+    // Perform proper error handling.
+    print(error)
 }
 ```
 
@@ -77,10 +77,10 @@ It's possible to format only a specific range in the input string by calling `-f
 let result = formatter.format(script, limitedTo: 20 ... 39)
 switch result {
 case .success(let formattedCode):
-  break
+    break
 case .failure(let error):
-  // Perform proper error handling.
-  print(error)
+    // Perform proper error handling.
+    print(error)
 }
 ```
 
@@ -91,11 +91,11 @@ This is useful for moving the cursor when developing a text editor.
 let result = formatter.format(script, withCursorAtLocation: 38)
 switch result {
 case .success(let formatResult):
-  print(formatResult.formattedString)
-  print(formatResult.cursorOffset)
+    print(formatResult.formattedString)
+    print(formatResult.cursorOffset)
 case .failure(let error):
-  // Perform proper error handling.
-  print(error)
+    // Perform proper error handling.
+    print(error)
 }
 ```
 
