@@ -163,7 +163,7 @@ This package bundles the Prettier library along with support for the following l
 
 The package uses the following dependencies.
 
-- [prettier/rettier](https://github.com/prettier/prettier)
+- [prettier/prettier](https://github.com/prettier/prettier)
 - [prettier/plugin-php](https://github.com/prettier/plugin-php)
 
 The language detection is inspired by the one in the JavaScript version of Prettier which depends on data from [ikatyang/linguist-languages](https://github.com/ikatyang/linguist-languages). Parts of the data stored in that repository was copied into this package.
