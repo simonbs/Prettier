@@ -62,14 +62,17 @@ public final class PrettierFormatter {
     /// Whether Prettier formats quoted code embedded in the file.
     public var embeddedLanguageFormatting: EmbeddedLanguageFormattingStrategy = .auto
 
-    private let language: Language
+    private let plugins: [Plugin]
+    private let parser: Parser
     private var isPrepared = false
     private var context = JSContext()!
 
     /// Initializes Prettier to format code.
-    /// - Parameter language: Language of the code to be formatted.
-    public init(language: Language) {
-        self.language = language
+    /// - Parameter plugins: The plugins to load into Prettier.
+    /// - Parameter parser: Parser to use for formatting the code.
+    public init(plugins: [Plugin], parser: Parser) {
+        self.plugins = plugins
+        self.parser = parser
     }
 
     /// Prepares Prettier to format code. This must be called before calling any of the formatting functions. This function can be called well in advance to have the instance prepared to format code at a later time.
@@ -157,8 +160,9 @@ private extension PrettierFormatter {
     }
 
     private func loadScriptsIntoContext() {
-        let filenames = ["standalone"] + Parser.allCases.map(\.filename)
-        let fileURLs = filenames.compactMap { Bundle.module.url(forResource: $0, withExtension: "js", subdirectory: "js") }
+        let standaloneFileURL = Bundle.module.url(forResource: "standalone", withExtension: "js", subdirectory: "js")
+        let pluginFileURLs = plugins.map(\.fileURL)
+        let fileURLs = ([standaloneFileURL] + pluginFileURLs).compactMap { $0 }
         let script = fileURLs.compactMap { try? String(contentsOf: $0) }.joined(separator: "\n")
         context.evaluateScript(script)
     }
@@ -170,7 +174,7 @@ private extension PrettierFormatter {
         guard let prettierPluginsValue = context.objectForKeyedSubscript("prettierPlugins") else {
             return .failure(.failedCreatingConfiguration)
         }
-        value.setObject(language.parserName, forKeyedSubscript: .parser)
+        value.setObject(parser.name, forKeyedSubscript: .parser)
         value.setObject(prettierPluginsValue, forKeyedSubscript: .plugins)
         value.setObject(printWidth, forKeyedSubscript: .printWidth)
         value.setObject(tabWidth, forKeyedSubscript: .tabWidth)

@@ -31,12 +31,20 @@ import Prettier
 Now you can create an instance of PrettierFormatter.
 
 ```swift
-let formatter = PrettierFormatter(language: .javaScript)
+let formatter = PrettierFormatter(plugins: [BabelParser()], parser: BabelParser())
 ```
 
-We're passing a language when creating an instance of PrettierFormatter. This is the programming language of the code to format.
-The package contains all the languages officially supported by the Prettier code formatter which can be built to run in JavaScriptCore.
-See the list of supported languages below.
+We need to pass the plugins to use with Prettier. Some documents can be formatted with a single plugin and some may require multiple parsers if the document includes a mix of languages. An example of this is HTML documents that may contain HTML, CSS and JavaScript.
+
+Next we're passing the parser to use to use for formatting the code.
+
+To format HTML we would create our PrettierFormatter as shown below.
+
+```swift
+let formatter = PrettierFormatter(plugins: [HTMLPlugin(), PostCSSPlugin(), BabelPlugin()] , parser: HTMLParser())
+```
+
+See the [Supported Languages](#supported-languages) for a list of all plugins and parsers.
 
 After creating an instance of PrettierFormatter, you must prepare the formatter before formatting code.
 
@@ -105,59 +113,24 @@ from both `-format()` and `-format(:limitedTo:)` because this one contains the l
 There are several properties that can be used to tweak the formatted code. These options map 1:1 to options in the JavaScript implementation of Prettier.
 For more information on the options, please have a look at [PrettierFormatter.swift](https://github.com/simonbs/Prettier/blob/main/Sources/Prettier/PrettierFormatter.swift) as well as [the documentation for the JavaScript implementation of Prettier](https://prettier.io/docs/en/options.html).
 
-### Language Detection
-
-When creating an instance of PrettierFormatter you must specify the language of the code to format.
-The Language type has initializers to help determine the language of a file given it's filename, file extension or both.
-
-Languages can be detected from the file extension.
-
-```swift
-let language = Language(fileExtension: "js") // Detected: JavaScript
-```
-
-It can also be detected by specifying a file URL.
-
-```swift
-let directoryURL = URL(fileURLWithPath: NSTemporaryDirectory())
-let fileURL = directoryURL.appendingPathComponent("index.html")
-let language = Language(fileURL: fileURL) // Detected: HTML
-```
-
-It also assumes the language of files with common names.
-
-```swift
-let language = Language(filename: "README") // Detected: Markdown
-```
-
-This logic is based on data stored in the [ikatyang/linguist-languages](https://github.com/ikatyang/linguist-languages) repository.
-
 ### Supported Languages
 
-This package bundles the Prettier library along with support for the following languages and frameworks:
+This package bundles the Prettier library along with support for the following languages and frameworks. The table below shows the language name and the parser to be used in order to format code in that language. A parser can support more languages.
 
-- Angular
-- CSS
-- Flow
-- GraphQL
-- HTML
-- Handlebars
-- JSON Stringify
-- JSON With Comments
-- JSON5
-- JSX
-- JavaScript
-- Less
-- Lightning Web Components
-- MDX
-- Markdown
-- PHP
-- PostCSS
-- SCSS
-- TSX
-- TypeScript
-- Vue
-- YAML
+|Package|Parsers||
+|-|-|-|
+|PrettierBabel|BabelFlowParser, BabelParser, BabelTSParser, JSON5Parser, JSONParser, JSONStringifyParser|BabelParser can be used for parsing JavaScript.|
+|PrettierEspree|EspreeParser||
+|PrettierFlow|FlowParser||
+|PrettierGlimmer|GlimmerParser|Used for Handlebars.|
+|PrettierGraphQL|GraphQLParser||
+|PrettierHTML|AngularParser, HTMLParser, LWCParser, VueParser|Include BabelParser and CSSParser to parse entire HTML documents. HTMLParser can be used to parse Vue.|
+|PrettierMarkdown|MarkdownParser, MDXParser||
+|PrettierMeriyah|MeriyahParser||
+|PrettierPHP|PHPParser||
+|PrettierPostCSS|CSSParser, LessParser, SCSSParser||
+|PrettierTypeScript|TypeScriptParser||
+|PrettierYAML|YAMLParser||
 
 ## Acknowledgements
 
@@ -165,8 +138,6 @@ The package uses the following dependencies.
 
 - [prettier/prettier](https://github.com/prettier/prettier)
 - [prettier/plugin-php](https://github.com/prettier/plugin-php)
-
-The language detection is inspired by the one in the JavaScript version of Prettier which depends on data from [ikatyang/linguist-languages](https://github.com/ikatyang/linguist-languages). Parts of the data stored in that repository was copied into this package.
 
 ## License
 

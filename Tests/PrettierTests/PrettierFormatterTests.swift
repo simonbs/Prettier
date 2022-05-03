@@ -1,5 +1,10 @@
 import XCTest
-@testable import Prettier
+import Prettier
+import PrettierBabel
+import PrettierMarkdown
+import PrettierPHP
+import PrettierPostCSS
+import PrettierHTML
 
 final class PrettierTests: XCTestCase {
     func testInitialDocExample() {
@@ -15,7 +20,7 @@ foo(
 );
 
 """
-        let formatter = PrettierFormatter(language: .javaScript)
+        let formatter = PrettierFormatter(plugins: [BabelPlugin()], parser: BabelParser())
         formatter.prepare()
         let result = formatter.format(input)
         switch result {
@@ -29,7 +34,7 @@ foo(
     func testUntouched() {
         let input = "foo(arg1, arg2, arg3, arg4);"
         let output = "foo(arg1, arg2, arg3, arg4);\n"
-        let formatter = PrettierFormatter(language: .javaScript)
+        let formatter = PrettierFormatter(plugins: [BabelPlugin()], parser: BabelParser())
         formatter.prepare()
         let result = formatter.format(input)
         switch result {
@@ -67,7 +72,7 @@ array_map(
 );
 
 """
-        let formatter = PrettierFormatter(language: .php)
+        let formatter = PrettierFormatter(plugins: [PHPPlugin()], parser: PHPParser())
         formatter.prepare()
         let result = formatter.format(input)
         switch result {
@@ -92,7 +97,7 @@ const foo = 'bar'
 console .log( 213 )
 
 """
-        let formatter = PrettierFormatter(language: .markdown)
+        let formatter = PrettierFormatter(plugins: [MarkdownPlugin()], parser: MarkdownParser())
         formatter.prepare()
         let result = formatter.format(input)
         switch result {
@@ -106,7 +111,7 @@ console .log( 213 )
     func testTabWidth() {
         let input = "if (hello == \"world\") { return \"Hello world\" }"
         let output = "if (hello == \"world\") {\n        return \"Hello world\";\n}\n"
-        let formatter = PrettierFormatter(language: .javaScript)
+        let formatter = PrettierFormatter(plugins: [BabelPlugin()], parser: BabelParser())
         formatter.tabWidth = 8
         formatter.prepare()
         let result = formatter.format(input)
@@ -121,7 +126,7 @@ console .log( 213 )
     func testTabsInsteadOfSpaces() {
         let input = "if (hello == \"world\") { return \"Hello world\" }"
         let output = "if (hello == \"world\") {\n\treturn \"Hello world\";\n}\n"
-        let formatter = PrettierFormatter(language: .javaScript)
+        let formatter = PrettierFormatter(plugins: [BabelPlugin()], parser: BabelParser())
         formatter.useTabs = true
         formatter.prepare()
         let result = formatter.format(input)
@@ -136,7 +141,7 @@ console .log( 213 )
     func testSemicolonsDisables() {
         let input = "if (hello == \"world\") { return \"Hello world\" }"
         let output = "if (hello == \"world\") {\n  return \"Hello world\"\n}\n"
-        let formatter = PrettierFormatter(language: .javaScript)
+        let formatter = PrettierFormatter(plugins: [BabelPlugin()], parser: BabelParser())
         formatter.semicolons = false
         formatter.prepare()
         let result = formatter.format(input)
@@ -151,7 +156,7 @@ console .log( 213 )
     func testFormattingRangeOfCode() {
         let input = "if(hello==\"world\"){\nreturn\"Hello world\"\n}"
         let output = "if(hello==\"world\"){\nreturn \"Hello world\";\n}"
-        let formatter = PrettierFormatter(language: .javaScript)
+        let formatter = PrettierFormatter(plugins: [BabelPlugin()], parser: BabelParser())
         formatter.prepare()
         let result = formatter.format(input, limitedTo: 20 ... 39)
         switch result {
@@ -165,7 +170,7 @@ console .log( 213 )
     func testFormattingWithCursorLocation() {
         let input = "if(hello==\"world\"){\nreturn\"Hello world\"\n}"
         let output = "if (hello == \"world\") {\n  return \"Hello world\";\n}\n"
-        let formatter = PrettierFormatter(language: .javaScript)
+        let formatter = PrettierFormatter(plugins: [BabelPlugin()], parser: BabelParser())
         formatter.prepare()
         let result = formatter.format(input, withCursorAtLocation: 38)
         switch result {
@@ -263,7 +268,52 @@ console .log( 213 )
 </html>
 
 """
-        let formatter = PrettierFormatter(language: .html)
+        let formatter = PrettierFormatter(plugins: [
+            HTMLPlugin(), PostCSSPlugin(), BabelPlugin()
+        ] , parser: HTMLParser())
+        formatter.prepare()
+        let result = formatter.format(input)
+        switch result {
+        case .success(let result):
+            XCTAssertEqual(result, output)
+        case .failure(let error):
+            XCTFail(error.localizedDescription)
+        }
+    }
+
+    func testJSON() {
+        let input = """
+{"allOn": "Single", "Line": "example",
+"noSpace":true,
+  "quote": {
+    'singleQuote': 'example',
+                  "indented": true,
+  },
+  "phoneNumbers": [
+    {"type": "home",
+      "number": "212 555-1234"},
+    {"type": "office",
+      "trailing": "commas by accident"},
+  ],
+}
+"""
+        let output = """
+{
+  "allOn": "Single",
+  "Line": "example",
+  "noSpace": true,
+  "quote": {
+    "singleQuote": "example",
+    "indented": true
+  },
+  "phoneNumbers": [
+    { "type": "home", "number": "212 555-1234" },
+    { "type": "office", "trailing": "commas by accident" }
+  ]
+}
+
+"""
+        let formatter = PrettierFormatter(plugins: [BabelPlugin()], parser: JSONParser())
         formatter.prepare()
         let result = formatter.format(input)
         switch result {
