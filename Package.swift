@@ -7,7 +7,6 @@ let package = Package(
     name: "Prettier",
     products: [
         .library(name: "Prettier", targets: ["Prettier"]),
-        .library(name: "PrettierAngular", targets: ["PrettierAngular"]),
         .library(name: "PrettierBabel", targets: ["PrettierBabel"]),
         .library(name: "PrettierEspree", targets: ["PrettierEspree"]),
         .library(name: "PrettierFlow", targets: ["PrettierFlow"]),
@@ -23,7 +22,6 @@ let package = Package(
     ],
     targets: [
         .target(name: "Prettier", resources: [.copy("js")]),
-        .target(name: "PrettierAngular", dependencies: ["Prettier"], resources: [.copy("js")]),
         .target(name: "PrettierBabel", dependencies: ["Prettier"], resources: [.copy("js")]),
         .target(name: "PrettierEspree", dependencies: ["Prettier"], resources: [.copy("js")]),
         .target(name: "PrettierFlow", dependencies: ["Prettier"], resources: [.copy("js")]),
@@ -41,6 +39,7 @@ let package = Package(
             "PrettierBabel",
             "PrettierMarkdown",
             "PrettierPHP",
+            "PrettierPostCSS",
             "PrettierHTML"
         ])
     ]

@@ -62,13 +62,16 @@ public final class PrettierFormatter {
     /// Whether Prettier formats quoted code embedded in the file.
     public var embeddedLanguageFormatting: EmbeddedLanguageFormattingStrategy = .auto
 
+    private let plugins: [Plugin]
     private let parser: Parser
     private var isPrepared = false
     private var context = JSContext()!
 
     /// Initializes Prettier to format code.
+    /// - Parameter plugins: The plugins to load into Prettier.
     /// - Parameter parser: Parser to use for formatting the code.
-    public init(parser: Parser) {
+    public init(plugins: [Plugin], parser: Parser) {
+        self.plugins = plugins
         self.parser = parser
     }
 
@@ -158,7 +161,8 @@ private extension PrettierFormatter {
 
     private func loadScriptsIntoContext() {
         let standaloneFileURL = Bundle.module.url(forResource: "standalone", withExtension: "js", subdirectory: "js")
-        let fileURLs = [standaloneFileURL, parser.fileURL].compactMap { $0 }
+        let pluginFileURLs = plugins.map(\.fileURL)
+        let fileURLs = ([standaloneFileURL] + pluginFileURLs).compactMap { $0 }
         let script = fileURLs.compactMap { try? String(contentsOf: $0) }.joined(separator: "\n")
         context.evaluateScript(script)
     }

@@ -31,12 +31,20 @@ import Prettier
 Now you can create an instance of PrettierFormatter.
 
 ```swift
-let formatter = PrettierFormatter(parser: BabelParser())
+let formatter = PrettierFormatter(plugins: [BabelParser()], parser: BabelParser())
 ```
 
-We're passing a parser when creating an instance of PrettierFormatter. A parser may be used to format several programming languages.
-The package contains all the languages officially supported by the Prettier code formatter which can be built to run in JavaScriptCore.
-See the list of supported languages below.
+We need to pass the plugins to use with Prettier. Some documents can be formatted with a single plugin and some may require multiple parsers if the document includes a mix of languages. An example of this is HTML documents that may contain HTML, CSS and JavaScript.
+
+Next we're passing the parser to use to use for formatting the code.
+
+To format HTML we would create our PrettierFormatter as shown below.
+
+```swift
+let formatter = PrettierFormatter(plugins: [HTMLPlugin(), PostCSSPlugin(), BabelPlugin()] , parser: HTMLParser())
+```
+
+See the [Supported Languages](#supported-languages) for a list of all plugins and parsers.
 
 After creating an instance of PrettierFormatter, you must prepare the formatter before formatting code.
 
@@ -109,30 +117,20 @@ For more information on the options, please have a look at [PrettierFormatter.sw
 
 This package bundles the Prettier library along with support for the following languages and frameworks. The table below shows the language name and the parser to be used in order to format code in that language. A parser can support more languages.
 
-|Language|Parser|
-|-|-|
-|Angular|AngularParser|
-|CSS|PostCSSParser|
-|Flow|FlowParser|
-|GraphQL|GraphQLParser|
-|HTML|HTMLParser|
-|Handlebars|GlimmerParser|
-|JSON Stringify|BabelParser|
-|JSON With Comments|BabelParser|
-|JSON5|BabelParser|
-|JSX|BabelParser|
-|JavaScript|BabelParser|
-|Less|PostCSSParser|
-|Lighting Web Components|HTMLParser|
-|MDX|MarkdownParser|
-|Markdown|MarkdownParser|
-|PHP|PHPParser|
-|PostCSS|PostCSSParser|
-|SCSS|PostCSSParser|
-|TSX|TypeScriptParser|
-|TypeScript|TypeScriptParser|
-|Vue|HTMLParser|
-|YAML|YAMLParser|
+|Package|Parsers||
+|-|-|-|
+|PrettierBabel|BabelFlowParser, BabelParser, BabelTSParser, JSON5Parser, JSONParser, JSONStringifyParser|BabelParser can be used for parsing JavaScript.|
+|PrettierEspree|EspreeParser||
+|PrettierFlow|FlowParser||
+|PrettierGlimmer|GlimmerParser|Used for Handlebars.|
+|PrettierGraphQL|GraphQLParser||
+|PrettierHTML|AngularParser, HTMLParser, LWCParser, VueParser|Include BabelParser and CSSParser to parse entire HTML documents. HTMLParser can be used to parse Vue.|
+|PrettierMarkdown|MarkdownParser, MDXParser||
+|PrettierMeriyah|MeriyahParser||
+|PrettierPHP|PHPParser||
+|PrettierPostCSS|CSSParser, LessParser, SCSSParser||
+|PrettierTypeScript|TypeScriptParser||
+|PrettierYAML|YAMLParser||
 
 ## Acknowledgements
 
