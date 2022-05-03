@@ -1,7 +1,10 @@
 import Foundation
 
+/// Result of formatting code with a cursor position.
 public struct FormatWithCursorResult {
+    /// The new cursor position.
     public let cursorOffset: Int
+    /// The formatted string.
     public let formattedString: String
 
     init(cursorOffset: Int, formattedString: String) {

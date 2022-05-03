@@ -1,5 +1,6 @@
 import Foundation
 
+/// Details supplied by PrettierFormatterError when parsing fails.
 public struct ParsingErrorDetails: CustomDebugStringConvertible {
     public struct Location {
         let line: Int
