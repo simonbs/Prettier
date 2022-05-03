@@ -123,16 +123,16 @@ This package bundles the Prettier library along with support for the following l
 |JSX|BabelParser|
 |JavaScript|BabelParser|
 |Less|PostCSSParser|
-|Lighting Web Components|ParserHTML|
-|MDX|ParserMarkdown|
-|Markdown|ParserMarkdown|
-|PHP|ParserPHP|
-|PostCSS|ParserPostCSS|
-|SCSS|ParserPostCSS|
-|TSX|ParserTypeScript|
-|TypeScript|ParserTypeScript|
-|Vue|ParserHTML|
-|YAML|ParserYAML|
+|Lighting Web Components|HTMLParser|
+|MDX|MarkdownParser|
+|Markdown|MarkdownParser|
+|PHP|PHPParser|
+|PostCSS|PostCSSParser|
+|SCSS|PostCSSParser|
+|TSX|TypeScriptParser|
+|TypeScript|TypeScriptParser|
+|Vue|HTMLParser|
+|YAML|YAMLParser|
 
 ## Acknowledgements
 
