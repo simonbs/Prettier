@@ -31,7 +31,7 @@ import Prettier
 Now you can create an instance of PrettierFormatter.
 
 ```swift
-let formatter = PrettierFormatter(plugins: [BabelParser()], parser: BabelParser())
+let formatter = PrettierFormatter(plugins: [BabelPlugin()], parser: BabelParser())
 ```
 
 We need to pass the plugins to use with Prettier. Some documents can be formatted with a single plugin and some may require multiple parsers if the document includes a mix of languages. An example of this is HTML documents that may contain HTML, CSS and JavaScript.
