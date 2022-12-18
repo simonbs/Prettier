@@ -1,3 +1,4 @@
+// swiftlint:disable discouraged_none_name
 import Foundation
 
 /// Strategy determining whether to use trailing commas in formatted code.
@@ -6,6 +7,6 @@ public enum TrailingCommaStrategy: String, Codable {
     case es5
     /// No trailing commas.
     case none
-    /// railing commas wherever possible.
+    /// Trailing commas wherever possible.
     case all
 }
