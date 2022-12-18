@@ -2,7 +2,7 @@ import Foundation
 import Prettier
 
 public struct MeriyahPlugin: Plugin {
-    public let fileURL = Bundle.module.url(forResource: "parser-meriyah", withExtension: "js", subdirectory: "js")!
+    public let fileURL = Bundle.module.url(forResource: "parser-meriyah", withExtension: "js")!
 
     public init() {}
 }
