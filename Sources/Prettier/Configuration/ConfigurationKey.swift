@@ -25,7 +25,7 @@ enum ConfigurationKey: String {
 }
 
 extension JSValue {
-    func setObject(_ object: Any!, forKeyedSubscript key: ConfigurationKey) {
+    func setObject(_ object: Any, forKeyedSubscript key: ConfigurationKey) {
         setObject(object, forKeyedSubscript: key.rawValue)
     }
 }

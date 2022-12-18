@@ -1,11 +1,12 @@
-import XCTest
 import Prettier
 import PrettierBabel
+import PrettierHTML
 import PrettierMarkdown
 import PrettierPHP
 import PrettierPostCSS
-import PrettierHTML
+import XCTest
 
+// swiftlint:disable:next type_body_length
 final class PrettierTests: XCTestCase {
     func testInitialDocExample() {
         let input = """
@@ -182,6 +183,7 @@ console .log( 213 )
         }
     }
 
+    // swiftlint:disable:next function_body_length
     func testHTMLWithCSSAndJavaScript() {
         let input = """
 <!DOCTYPE html>
@@ -270,7 +272,7 @@ console .log( 213 )
 """
         let formatter = PrettierFormatter(plugins: [
             HTMLPlugin(), PostCSSPlugin(), BabelPlugin()
-        ] , parser: HTMLParser())
+        ], parser: HTMLParser())
         formatter.prepare()
         let result = formatter.format(input)
         switch result {
