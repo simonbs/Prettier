@@ -1,3 +1,4 @@
+// swiftlint:disable discouraged_none_name
 import Foundation
 
 /// Strategy determining whether to use trailing commas in formatted code.
