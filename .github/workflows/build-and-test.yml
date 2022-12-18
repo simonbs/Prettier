@@ -1,0 +1,19 @@
+name: Build and Test
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  build:
+    name: Build
+    runs-on: macOS-12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Build
+        run: xcodebuild build-for-testing -scheme Prettier-Package -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14 Pro'
+      - name: Test
+        run: xcodebuild test-without-building -scheme Prettier-Package -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14 Pro'
