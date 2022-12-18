@@ -7,6 +7,6 @@ public enum TrailingCommaStrategy: String, Codable {
     case es5
     /// No trailing commas.
     case none
-    /// railing commas wherever possible.
+    /// Trailing commas wherever possible.
     case all
 }
