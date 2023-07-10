@@ -1,8 +1,10 @@
-import JavaScriptCore
+import Foundation
+import JXKit
 
 /// Error that can be returned by Prettier.
 public enum PrettierFormatterError: LocalizedError {
     case unprepared
+    case failedInitializingContext
     case failedCreatingConfiguration
     case failedCallingFormatFunction
     case unexpectedResultFromFormatFunction
@@ -12,7 +14,9 @@ public enum PrettierFormatterError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .unprepared:
-            return "Prettier have not been prepared. Call prepare() before formatting code"
+            return "Prettier has not been prepared. Call prepare() before formatting code"
+        case .failedInitializingContext:
+            return "Could not initialize the JavaScript context"
         case .failedCreatingConfiguration:
             return "Could not create the configuration JavaScript object"
         case .failedCallingFormatFunction:
@@ -65,7 +69,7 @@ public final class PrettierFormatter {
     private let plugins: [Plugin]
     private let parser: Parser
     private var isPrepared = false
-    private var context = JSContext()!
+    private var context = JXContext()
 
     /// Initializes Prettier to format code.
     /// - Parameter plugins: The plugins to load into Prettier.
@@ -76,9 +80,9 @@ public final class PrettierFormatter {
     }
 
     /// Prepares Prettier to format code. This must be called before calling any of the formatting functions. This function can be called well in advance to have the instance prepared to format code at a later time.
-    public func prepare() {
+    public func prepare() throws {
         if !isPrepared {
-            loadScriptsIntoContext()
+            try loadScriptsIntoContext()
         }
     }
 
@@ -99,9 +103,7 @@ public final class PrettierFormatter {
     ///   - range: Range in the string where the code to be formatted resides.
     /// - Returns: Result carrying the formatted code.
     public func format(_ code: String, limitedTo range: ClosedRange<Int>) -> Result<String, PrettierFormatterError> {
-        return makeConfiguration().flatMap { configuration in
-            configuration.setObject(range.lowerBound, forKeyedSubscript: .rangeStart)
-            configuration.setObject(range.upperBound, forKeyedSubscript: .rangeEnd)
+        return makeConfiguration(range: range).flatMap { configuration in
             return format(code, withConfiguration: configuration)
         }.flatMap(mapString)
     }
@@ -112,86 +114,98 @@ public final class PrettierFormatter {
     ///   - cursorOffset: The cursor's current location in the code.
     /// - Returns: Result carrying the formatted code.
     public func format(_ code: String, withCursorAtLocation cursorOffset: Int) -> Result<FormatWithCursorResult, PrettierFormatterError> {
-        return makeConfiguration().flatMap { configuration in
-            configuration.setObject(cursorOffset, forKeyedSubscript: .cursorOffset)
+        return makeConfiguration(cursorOffset: cursorOffset).flatMap { configuration in
             return format(code, withConfiguration: configuration, prettierFunctionName: "formatWithCursor")
-        }.flatMap(mapFormatWithCursoResult)
+        }.flatMap(mapFormatWithCursorResult)
     }
 }
 
 private extension PrettierFormatter {
     private func format(_ code: String,
-                        withConfiguration configuration: JSValue,
-                        prettierFunctionName: String = "format") -> Result<JSValue, PrettierFormatterError> {
-        context.exception = nil
-        guard let prettier = context.objectForKeyedSubscript("prettier") else {
+                        withConfiguration configuration: JXValue,
+                        prettierFunctionName: String = "format") -> Result<JXValue, PrettierFormatterError> {
+        guard let prettier = try? context.global["prettier"] else {
             return .failure(.unprepared)
         }
-        guard prettier.isObject, let formatFunction = prettier.objectForKeyedSubscript(prettierFunctionName) else {
+        guard prettier.isObject, let formatFunction = try? prettier[prettierFunctionName] else {
             return .failure(.failedCallingFormatFunction)
         }
-        guard let result = formatFunction.call(withArguments: [code, configuration]) else {
-            return .failure(.failedCallingFormatFunction)
-        }
-        if result.isUndefined,
-           let exception = context.exception, exception.isObject,
-           let object = exception.toObject() as? [String: Any],
-           let errorDetails = ParsingErrorDetails(object: object) {
-            return .failure(.parsingError(errorDetails))
-        } else {
+
+        let result: JXValue
+        do {
+            result = try formatFunction.call(withArguments: [code, configuration])
             return .success(result)
+        } catch {
+            // TODO: Parse `ParsingErrorDetails`
+            print(error)
+            return .failure(.failedCallingFormatFunction)
         }
     }
 
-    private func mapString(from value: JSValue) -> Result<String, PrettierFormatterError> {
-        if value.isString, let string = value.toString() {
+    private func mapString(from value: JXValue) -> Result<String, PrettierFormatterError> {
+        if value.isString, let string = try? value.string {
             return .success(string)
         } else {
             return .failure(.unexpectedResultFromFormatFunction)
         }
     }
 
-    private func mapFormatWithCursoResult(from value: JSValue) -> Result<FormatWithCursorResult, PrettierFormatterError> {
-        if value.isObject, let object = value.toObject() as? [String: Any], let result = FormatWithCursorResult(object: object) {
+    private func mapFormatWithCursorResult(from value: JXValue) -> Result<FormatWithCursorResult, PrettierFormatterError> {
+        if value.isObject, let result = try? value.toDecodable(ofType: FormatWithCursorResult.self) {
             return .success(result)
         } else {
             return .failure(.unexpectedResultFromFormatFunction)
         }
     }
 
-    private func loadScriptsIntoContext() {
+    private func loadScriptsIntoContext() throws {
         let standaloneFileURL = Bundle.module.url(forResource: "standalone", withExtension: "js")
         let pluginFileURLs = plugins.map(\.fileURL)
         let fileURLs = ([standaloneFileURL] + pluginFileURLs).compactMap { $0 }
         let script = fileURLs.compactMap { try? String(contentsOf: $0) }.joined(separator: "\n")
-        context.evaluateScript(script)
+        do {
+            try context.eval(script)
+        } catch {
+            throw PrettierFormatterError.failedInitializingContext
+        }
     }
 
-    private func makeConfiguration() -> Result<JSValue, PrettierFormatterError> {
-        guard let value = JSValue(newObjectIn: context) else {
+    private func makeConfiguration(range: ClosedRange<Int>? = nil, cursorOffset: Int? = nil) -> Result<JXValue, PrettierFormatterError> {
+        guard let prettierPluginsValue = try? context.global["prettierPlugins"] else {
             return .failure(.failedCreatingConfiguration)
         }
-        guard let prettierPluginsValue = context.objectForKeyedSubscript("prettierPlugins") else {
+
+        let configuration = Configuration(
+            parser: parser.name,
+            rangeStart: range?.lowerBound,
+            rangeEnd: range?.upperBound,
+            cursorOffset: cursorOffset,
+            printWidth: printWidth,
+            tabWidth: tabWidth,
+            useTabs: useTabs,
+            semicolons: semicolons,
+            singleQuote: singleQuote,
+            quoteProperties: quoteProperties.rawValue,
+            jsxSingleQuote: jsxSingleQuote,
+            trailingCommas: trailingCommas.rawValue,
+            bracketSpacing: bracketSpacing,
+            bracketSameLine: bracketSameLine,
+            arrowFunctionParentheses: arrowFunctionParentheses.rawValue,
+            proseWrap: proseWrap.rawValue,
+            htmlWhitespaceSensitivity: htmlWhitespaceSensitivity.rawValue,
+            vueIndentScriptAndStyle: vueIndentScriptAndStyle,
+            endOfLine: endOfLine.rawValue,
+            embeddedLanguageFormatting: embeddedLanguageFormatting.rawValue
+        )
+
+        let value: JXValue
+        do {
+            value = try context.encode(configuration)
+            try value.setProperty("plugins", prettierPluginsValue)
+        } catch {
             return .failure(.failedCreatingConfiguration)
         }
-        value.setObject(parser.name, forKeyedSubscript: .parser)
-        value.setObject(prettierPluginsValue, forKeyedSubscript: .plugins)
-        value.setObject(printWidth, forKeyedSubscript: .printWidth)
-        value.setObject(tabWidth, forKeyedSubscript: .tabWidth)
-        value.setObject(useTabs, forKeyedSubscript: .useTabs)
-        value.setObject(semicolons, forKeyedSubscript: .semicolons)
-        value.setObject(singleQuote, forKeyedSubscript: .singleQuote)
-        value.setObject(quoteProperties.rawValue, forKeyedSubscript: .quoteProperties)
-        value.setObject(jsxSingleQuote, forKeyedSubscript: .jsxSingleQuote)
-        value.setObject(trailingCommas.rawValue, forKeyedSubscript: .trailingCommas)
-        value.setObject(bracketSpacing, forKeyedSubscript: .bracketSpacing)
-        value.setObject(bracketSameLine, forKeyedSubscript: .bracketSameLine)
-        value.setObject(arrowFunctionParentheses.rawValue, forKeyedSubscript: .arrowFunctionParentheses)
-        value.setObject(proseWrap.rawValue, forKeyedSubscript: .proseWrap)
-        value.setObject(htmlWhitespaceSensitivity.rawValue, forKeyedSubscript: .htmlWhitespaceSensitivity)
-        value.setObject(vueIndentScriptAndStyle, forKeyedSubscript: .vueIndentScriptAndStyle)
-        value.setObject(endOfLine.rawValue, forKeyedSubscript: .endOfLine)
-        value.setObject(embeddedLanguageFormatting.rawValue, forKeyedSubscript: .embeddedLanguageFormatting)
+
         return .success(value)
     }
 }

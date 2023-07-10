@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "Prettier",
+    platforms: [ .macOS(.v10_15), .iOS(.v13), .tvOS(.v13) ],
     products: [
         .library(name: "Prettier", targets: ["Prettier"]),
         .library(name: "PrettierBabel", targets: ["PrettierBabel"]),
@@ -20,8 +21,11 @@ let package = Package(
         .library(name: "PrettierTypeScript", targets: ["PrettierTypeScript"]),
         .library(name: "PrettierYAML", targets: ["PrettierYAML"])
     ],
+    dependencies: [
+        .package(name: "JXKit", url: "https://github.com/jectivex/JXKit.git", .upToNextMajor(from: "3.0.0"))
+    ],
     targets: [
-        .target(name: "Prettier", resources: [.copy("standalone.js")]),
+        .target(name: "Prettier", dependencies: [.byName(name: "JXKit")], resources: [.copy("standalone.js")]),
         .target(name: "PrettierBabel", dependencies: ["Prettier"], resources: [.copy("parser-babel.js")]),
         .target(name: "PrettierEspree", dependencies: ["Prettier"], resources: [.copy("parser-espree.js")]),
         .target(name: "PrettierFlow", dependencies: ["Prettier"], resources: [.copy("parser-flow.js")]),

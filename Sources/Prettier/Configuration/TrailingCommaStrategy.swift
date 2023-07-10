@@ -10,3 +10,4 @@ public enum TrailingCommaStrategy: String, Codable {
     /// Trailing commas wherever possible.
     case all
 }
+// swiftlint:enable discouraged_none_name
