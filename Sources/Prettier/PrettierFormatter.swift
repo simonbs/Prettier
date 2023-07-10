@@ -136,8 +136,9 @@ private extension PrettierFormatter {
             result = try formatFunction.call(withArguments: [code, configuration])
             return .success(result)
         } catch {
-            // TODO: Parse `ParsingErrorDetails`
-            print(error)
+            if let error = error as? JXError, let parsingError = ParsingErrorDetails(error: error) {
+                return .failure(.parsingError(parsingError))
+            }
             return .failure(.failedCallingFormatFunction)
         }
     }

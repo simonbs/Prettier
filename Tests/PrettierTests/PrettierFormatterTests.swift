@@ -46,6 +46,30 @@ foo(
         }
     }
 
+    func testParsingError() throws {
+        let input = "foo(arg1, arg2"
+        let output = ParsingErrorDetails(
+            line: 1,
+            column: 15,
+            codeFrame: "> 1 | foo(arg1, arg2\n    |               ^"
+        )
+        let formatter = PrettierFormatter(plugins: [BabelPlugin()], parser: BabelParser())
+        try formatter.prepare()
+        let result = formatter.format(input)
+        switch result {
+        case .success:
+            XCTFail("Should not format correctly")
+        case .failure(let error):
+            switch error {
+            case .parsingError(let parsingError):
+                XCTAssertEqual(parsingError, output)
+            default:
+                XCTFail(error.localizedDescription)
+            }
+
+        }
+    }
+
     func testPHP() throws {
         let input = """
 <?php

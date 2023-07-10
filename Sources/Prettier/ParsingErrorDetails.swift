@@ -1,7 +1,8 @@
 import Foundation
+import JXKit
 
 /// Details supplied by PrettierFormatterError when parsing fails.
-public struct ParsingErrorDetails: Decodable, CustomDebugStringConvertible {
+public struct ParsingErrorDetails: Decodable, Equatable, CustomDebugStringConvertible {
     public let line: Int
     public let column: Int
     public let codeFrame: String
@@ -9,27 +10,39 @@ public struct ParsingErrorDetails: Decodable, CustomDebugStringConvertible {
         return "Parsing error at line \(line), column \(column):\n\(codeFrame)"
     }
 
-    struct PrettierErrorRange: Decodable {
-        let start: PrettierErrorLocation
+    public init(line: Int, column: Int, codeFrame: String) {
+        self.line = line
+        self.column = column
+        self.codeFrame = codeFrame
+    }
 
-        struct PrettierErrorLocation: Decodable {
-            let line: Int
-            let column: Int
+    init?(error: JXError) {
+        let lines = error.description.split(separator: "\n")
+        guard let jsScript = error.script, lines.count >= 2, lines[0].hasPrefix("SyntaxError:") else {
+            return nil
         }
-    }
 
-    enum CodingKeys: CodingKey {
-        case codeFrame
-        case loc
-    }
+        let posString = lines[0].split(separator: "(", maxSplits: 1)
+        guard posString.count == 2, posString[1].hasSuffix(")") else {
+            return nil
+        }
 
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let posParts = posString[1].dropLast().split(separator: ":", maxSplits: 1)
+        guard posParts.count == 2 else {
+            return nil
+        }
 
-        codeFrame = try container.decode(String.self, forKey: .codeFrame)
-        let loc = try container.decode(PrettierErrorRange.self, forKey: .loc)
+        guard let line = Int(posParts[0]), let column = Int(posParts[1]) else {
+            return nil
+        }
 
-        self.line = loc.start.line
-        self.column = loc.start.column
+        self.line = line
+        self.column = column
+
+        let jsErrorDescriptor = "<<script: \(jsScript) >>"
+        codeFrame = lines.dropFirst()
+            .joined(separator: "\n")
+            .replacingOccurrences(of: jsErrorDescriptor, with: "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
