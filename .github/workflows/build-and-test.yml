@@ -1,12 +1,12 @@
 name: Build and Test
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 jobs:
-  build:
-    name: Build
+  build-ios:
+    name: Build iOS
     runs-on: macOS-12
     steps:
       - name: Checkout
@@ -17,3 +17,21 @@ jobs:
         run: xcodebuild build-for-testing -scheme Prettier-Package -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14 Pro'
       - name: Test
         run: xcodebuild test-without-building -scheme Prettier-Package -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14 Pro'
+  build-linux:
+    name: Build Linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Update package index
+        run: sudo apt-get update
+      - name: Install dependencies
+        run: sudo apt-get install -y libjavascriptcoregtk-4.0-dev
+      - name: Configure dependencies
+        run: pkg-config --libs javascriptcoregtk-4.0
+      - name: Build
+        run: swift build
+      - name: Test
+        run: swift test
